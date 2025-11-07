@@ -36,13 +36,25 @@ class ArticleManager extends AbstractEntityManager
         }
         return null;
     }
-
     /**
      * Ajoute ou modifie un article.
      * On sait si l'article est un nouvel article car son id sera -1.
      * @param Article $article : l'article à ajouter ou modifier.
      * @return void
      */
+
+    public function incrementViews(int $id) : void
+    {
+        $sql = "UPDATE article SET views = views + 1 WHERE id = :id";
+        $this->db->query($sql, ['id' => $id]);
+    }
+
+    /**
+     * Incrémente le compteur de vues d'un article.
+     * Execute une requête SQL pour ajouter +1 à la colonne "views" de l'article correspondant.
+     * L'identifiant de l'article est passé en paramètre à la requête.
+     */
+
     public function addOrUpdateArticle(Article $article) : void 
     {
         if ($article->getId() == -1) {
