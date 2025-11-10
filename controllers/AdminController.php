@@ -176,4 +176,20 @@ class AdminController {
         // On redirige vers la page d'administration.
         Utils::redirect("admin");
     }
+
+    /**
+     * Affiche la page de monitoring des articles 
+     * @return void
+     */
+    public function monitoring() : void 
+    {
+        $this->checkIfUserIsConnected();
+        $articleManager = new ArticleManager();
+        $articlesWithStats = $articleManager->getAllArticlesWithStats();
+
+        $view = new View(title: "Monitoring");
+        $view->render(viewName: "monitoring", params: [
+            'articlesWithStats' => $articlesWithStats
+        ]);
+    }
 }
