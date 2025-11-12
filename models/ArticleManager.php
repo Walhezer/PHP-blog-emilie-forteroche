@@ -108,24 +108,39 @@ class ArticleManager extends AbstractEntityManager
     /**
      * Récupère tous les articles avec leurs stats de monitoring
      * (nb, vues, nb commentaires, date de publication)
+     * @param string $sort  Colonne de tri souhaitée 
+     * @param string $order Direction du tri 'ASC' ou 'DESC' 
      * @return array : un tableau d'articles avec stats.
      */
-    public function getAllArticlesWithStats(): array
+    public function getAllArticlesWithStats(string $sort = 'date_creation', string $order = 'DESC'): array
     {
-        $sql = "SELECT 
-                a.id,
-                a.title,
-                a.date_creation,
-                a.views,
-                COUNT(c.id) as nb_comments
-            FROM article AS a
-            LEFT JOIN comment AS c ON a.id = c.id_article
-            GROUP BY a.id, a.title, a.date_creation, a.views
-            ORDER BY a.date_creation DESC";
+        $allowedSort = ['title', 'date_creation', 'views', 'nb_comments'];
+        $allowedOrder = ['ASC', 'DESC'];
+
+
+        if (!in_array($sort, $allowedSort))
+            $sort = 'date_creation';
+        if (!in_array($order, $allowedOrder))
+            $order = 'DESC';
+
+        $sql = "
+    SELECT *
+    FROM (
+        SELECT 
+            a.id,
+            a.title,
+            a.date_creation,
+            a.views,
+            COUNT(c.id) as nb_comments
+        FROM article AS a
+        LEFT JOIN comment AS c ON a.id = c.id_article
+        GROUP BY a.id, a.title, a.date_creation, a.views
+    ) AS stats
+    ORDER BY $sort $order
+";
 
         $result = $this->db->query($sql);
         $articles = [];
-
         while ($article = $result->fetch()) {
             $articles[] = $article;
         }

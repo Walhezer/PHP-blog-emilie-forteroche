@@ -184,12 +184,17 @@ class AdminController {
     public function monitoring() : void 
     {
         $this->checkIfUserIsConnected();
+        $sort = $_GET['sort'] ?? 'date_creation';
+        $order = $_GET['order'] ?? 'DESC';
+
         $articleManager = new ArticleManager();
-        $articlesWithStats = $articleManager->getAllArticlesWithStats();
+        $articlesWithStats = $articleManager->getAllArticlesWithStats($sort, $order);
 
         $view = new View(title: "Monitoring");
         $view->render(viewName: "monitoring", params: [
-            'articlesWithStats' => $articlesWithStats
+            'articlesWithStats' => $articlesWithStats,
+            'sort' => $sort,
+            'order' => $order
         ]);
     }
 }
