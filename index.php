@@ -3,6 +3,9 @@
 require_once 'config/config.php';
 require_once 'config/autoload.php';
 
+//Initialisation des contrôleurs
+$adminController = new AdminController();
+
 // On récupère l'action demandée par l'utilisateur.
 // Si aucune action n'est demandée, on affiche la page d'accueil.
 $action = Utils::request('action', 'home');
@@ -21,8 +24,8 @@ try {
             $articleController = new ArticleController();
             $articleController->showApropos();
             break;
-        
-        case 'showArticle': 
+
+        case 'showArticle':
             $articleController = new ArticleController();
             $articleController->showArticle();
             break;
@@ -39,7 +42,7 @@ try {
 
 
         // Section admin & connexion. 
-        case 'admin': 
+        case 'admin':
             $adminController = new AdminController();
             $adminController->showAdmin();
             break;
@@ -49,7 +52,7 @@ try {
             $adminController->displayConnectionForm();
             break;
 
-        case 'connectUser': 
+        case 'connectUser':
             $adminController = new AdminController();
             $adminController->connectUser();
             break;
@@ -64,7 +67,7 @@ try {
             $adminController->showUpdateArticleForm();
             break;
 
-        case 'updateArticle': 
+        case 'updateArticle':
             $adminController = new AdminController();
             $adminController->updateArticle();
             break;
@@ -78,6 +81,15 @@ try {
             $adminController = new AdminController();
             $adminController->monitoring();
             break;
+
+        case 'adminComments':
+            $adminController->adminComments();
+            break;
+            
+        case 'deleteComment':
+            $adminController->deleteComment();
+            break;
+
 
         default:
             throw new Exception("La page demandée n'existe pas.");
