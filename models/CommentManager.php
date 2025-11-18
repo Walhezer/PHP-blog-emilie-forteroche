@@ -88,4 +88,22 @@ class CommentManager extends AbstractEntityManager
         return $result->rowCount() > 0;
     }
 
+    public function countAllComments(): int 
+    {
+        $sql = "SELECT COUNT(*) as total FROM comment";
+        return (int) $this->db->query($sql)->fetch()['total'];
+    }
+
+    public function getAllCommentsWithLimit(int $Limit, int $offset): array
+    {
+        $sql = "SELECT c.*, a.title AS title
+                FROM comment c
+                JOIN article a ON a.id = c.id_article
+                ORDER BY c.date_creation DESC
+                LIMIT $Limit OFFSET $offset";
+        
+        $result = $this->db->query($sql);
+        return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

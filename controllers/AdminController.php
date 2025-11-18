@@ -205,12 +205,30 @@ class AdminController
     public function adminComments(): void
     {
         $this->checkIfUserIsConnected();
-
         $commentManager = new CommentManager();
-        $comments = $commentManager->getAllComments();
+        $commentsPerPage = 3;
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($currentPage <1) {
+            $currentPage = 1;
+        }
+        $totalComments = $commentManager->countAllComments();
+        $totalPages = (int) ceil($totalComments / $commentsPerPage);
+        if ($totalPages > 0 && $currentPage > $totalPages) {
+            $currentPage = $totalPages;
+        }
+        $offset = ($currentPage - 1) * $commentsPerPage;
+        $comments = $commentManager->getAllCommentsWithLimit($commentsPerPage, $offset);
 
         $view = new View(title: 'Gestion des commentaires');
-        $view->render(viewName: 'adminComments', params: ['comments' => $comments]);
+        $view->render(
+            viewName: 'adminComments',
+            params: [
+                'comments' => $comments,
+                'currentPage' => $currentPage,
+                'totalPages' => $totalPages,
+                'totalComments' => $totalComments,
+            ]
+            );
     }
     /**
      * Recuperer l'ID du commentaire, le supprimer et rediriger vers la liste des commenataires.
@@ -227,6 +245,4 @@ class AdminController
         // Redirection après suppression (adapter la page de retour)
         Utils::redirect(action: 'adminComments');
     }
-
-
 }
